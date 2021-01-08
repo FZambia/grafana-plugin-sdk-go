@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"strconv"
 	"testing"
 	"time"
 
@@ -576,6 +577,33 @@ func TestJSON(t *testing.T) {
 			}
 		})
 	})
+}
+
+func BenchmarkFrame_AppendRow(b *testing.B) {
+	benchNumFields := []int{1, 2, 4, 8, 16, 32, 64}
+	for _, numFields := range benchNumFields {
+		b.Run(fmt.Sprintf("%02d_fields", numFields), func(b *testing.B) {
+			var fields []*data.Field
+			var row []interface{}
+			for i := 0; i < numFields; i++ {
+				field := data.NewField("value"+strconv.Itoa(i), data.Labels{"service": "test"}, []float64{})
+				fields = append(fields, field)
+				row = append(row, float64(i))
+			}
+
+			df := data.NewFrame(b.Name(), fields...)
+
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				df.AppendRow(row...)
+				if (i+1)%10000 == 0 {
+					// Clear df to use small amount of memory during a bench.
+					df = df.EmptyCopy()
+				}
+			}
+			b.ReportAllocs()
+		})
+	}
 }
 
 func timePtr(t time.Time) *time.Time {

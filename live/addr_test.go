@@ -53,11 +53,8 @@ func TestToWebSocketURL(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.desc, func(t *testing.T) {
-			conn := ConnectionInfo{
-				URL: tc.url,
-			}
-			t.Log("Testing conn.ToWebSocketURL", "url", tc.url, "exp", tc.exp, "expErr", tc.expErr)
-			ws, err := conn.ToWebSocketURL()
+			t.Log("Testing toWebSocketURL", "url", tc.url, "exp", tc.exp, "expErr", tc.expErr)
+			ws, err := toWebSocketURL(tc.url)
 			if tc.expErr == "" {
 				require.NoError(t, err)
 				assert.Equal(t, tc.exp, ws, tc.desc)

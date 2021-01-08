@@ -6,17 +6,9 @@ import (
 	"strings"
 )
 
-// ConnectionInfo contains everything a client needs to connect to the server.
-type ConnectionInfo struct {
-	// URL is the root Grafana HTTP URL.
-	URL string `json:"host,omitempty"`
-
-	// TODO: API KEY
-}
-
-// ToWebSocketURL converts the standard HTTP URL to the expected WS URL.
-func (c *ConnectionInfo) ToWebSocketURL() (string, error) {
-	u, err := url.Parse(c.URL)
+// toWebSocketURL converts the standard HTTP URL to the expected WS URL.
+func toWebSocketURL(grafanaURL string) (string, error) {
+	u, err := url.Parse(grafanaURL)
 	if err != nil {
 		return "", err
 	}

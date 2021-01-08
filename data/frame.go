@@ -44,7 +44,7 @@ type Frame struct {
 
 // UnmarshalJSON uses the `UnmarshalArrowFrame` function to unmarshal this type from JSON.
 func (f *Frame) UnmarshalJSON(b []byte) error {
-	arrow := []byte{}
+	var arrow []byte
 
 	if err := json.Unmarshal(b, &arrow); err != nil {
 		return err
@@ -77,7 +77,7 @@ type Frames []*Frame
 // AppendRow adds a new row to the Frame by appending to each element of vals to
 // the corresponding Field in the data.
 // The Frame's Fields must be initialized or AppendRow will panic.
-// The number of arguments must match the number of Fields in the Frame and each type must coorespond
+// The number of arguments must match the number of Fields in the Frame and each type must correspond
 // to the Field type or AppendRow will panic.
 func (f *Frame) AppendRow(vals ...interface{}) {
 	for i, v := range vals {
@@ -153,10 +153,10 @@ func (f *Frame) EmptyCopy() *Frame {
 	}
 
 	for _, field := range f.Fields {
-		copy := NewFieldFromFieldType(field.Type(), 0)
-		copy.Name = field.Name
-		copy.Labels = field.Labels.Copy()
-		newFrame.Fields = append(newFrame.Fields, copy)
+		fieldCopy := NewFieldFromFieldType(field.Type(), 0)
+		fieldCopy.Name = field.Name
+		fieldCopy.Labels = field.Labels.Copy()
+		newFrame.Fields = append(newFrame.Fields, fieldCopy)
 	}
 	return newFrame
 }
@@ -176,7 +176,7 @@ func NewFrameOfFieldTypes(name string, fieldLen int, fTypes ...FieldType) *Frame
 
 // TypeIndices returns a slice of Field index positions for the given fTypes.
 func (f *Frame) TypeIndices(fTypes ...FieldType) []int {
-	indices := []int{}
+	var indices []int
 	if f.Fields == nil {
 		return indices
 	}
